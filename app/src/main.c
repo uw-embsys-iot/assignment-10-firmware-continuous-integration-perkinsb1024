@@ -880,6 +880,7 @@ void main(void)
 		return;
 	}
 
+	LOG_INF("This is an updated app, version %d", APP_VERSION_STR);
 	LOG_INF("Running blinky");
 	while (1) {
 		ret = gpio_pin_toggle_dt(&led);
