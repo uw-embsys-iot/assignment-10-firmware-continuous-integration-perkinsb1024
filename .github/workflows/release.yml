@@ -16,17 +16,29 @@ jobs:
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
     steps:
-      # IOTEMBSYS10: Remove this
-      - name: Build firmware
-        run: |
-          echo "Test" > ${{ github.sha }}.signed.bin
       # IOTEMBSYS10: Add a step to checkout the repo
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: assignment-10-firmware-continuous-integration-perkinsb1024
 
       # IOTEMBSYS10: Add a step to initialize the west workspace
+      - name: Initialize
+        working-directory: assignment-10-firmware-continuous-integration-perkinsb1024
+        run: |
+          west init -l .
+          west update
 
       # IOTEMBSYS10: Add a step to BUILD AND SIGN the application for use with the bootloader!
+      - name: Build
+        working-directory: assignment-10-firmware-continuous-integration-perkinsb1024
+        run: |
+          west build -b stm32l496_cell app -p -- -DCONFIG_MCUBOOT_SIGNATURE_KEY_FILE=\"assignment-10-firmware-continuous-integration-perkinsb1024/conf/root-rsa-2048.pem\" -DEXTRA_CONF_FILE=mcumgr.conf
 
       # IOTEMBSYS10: Copy the output so that the name of the file is <git SHA>.signed.bin
+      - name: Copy signed firmware
+        run: |
+          cp assignment-10-firmware-continuous-integration-perkinsb1024/build/zephyr/zephyr.signed.bin ${{ github.sha }}.signed.bin
 
       # IOTEMBSYS10: This is given to you
       - name: Release
