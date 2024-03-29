@@ -12,10 +12,26 @@ jobs:
     steps:
       # IOTEMBSYS10: Add a step to checkout the repo
       - name: Checkout
-        run: echo "Not a real checkout. This job's status is ${{ job.status }}."
+        uses: actions/checkout@v3
+        with:
+          path: assignment-10-firmware-continuous-integration-perkinsb1024
 
       # IOTEMBSYS10: Add a step to initialize the west workspace
+      - name: Initialize
+        working-directory: assignment-10-firmware-continuous-integration-perkinsb1024
+        run: |
+          west init -l .
+          west update
 
       # IOTEMBSYS10: Add a step to build the application
+      - name: Build
+        working-directory: assignment-10-firmware-continuous-integration-perkinsb1024
+        run: |
+          west build -b stm32l496_cell app -p
 
       # IOTEMBSYS10: Add a step to run the unit tests with twister
+      - name: Test
+        working-directory: assignment-10-firmware-continuous-integration-perkinsb1024
+        shell: bash
+        run: |
+          west twister -T tests -v --inline-logs --integration
